@@ -1,6 +1,5 @@
 add_library(serverLib
     include/server/server.h
-
     src/server_impl.h
     src/sessionManager.h
     src/session.h
@@ -13,9 +12,6 @@ add_library(serverLib
     src/request.hpp
     src/request_parser.hpp
     src/request_parser.cpp
-
-
-
     )
 
 target_link_libraries(serverLib ASIO::ASIO)
