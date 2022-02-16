@@ -8,6 +8,14 @@ add_library(serverLib
     src/sessionManager.cpp
     src/session.cpp
     src/server.cpp
+    src/responsemanager.cpp
+    src/responsemanager.h
+    src/request.hpp
+    src/request_parser.hpp
+    src/request_parser.cpp
+
+
+
     )
 
 target_link_libraries(serverLib ASIO::ASIO)

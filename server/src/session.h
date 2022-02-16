@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <asio.hpp>
+#include "request.hpp"
+#include "request_parser.hpp"
 
 namespace sserver {
 class sessionManager;
@@ -12,7 +14,6 @@ public:
     ~session ();
     void start();
     void asyncRead();
-    void readHandler(const asio::error_code& error, std::size_t size);
     asio::ip::tcp::socket &socket() { return m_socket; }
 
     template<typename Buffer_t>
@@ -28,9 +29,14 @@ public:
     }
 
 private:
+    void asyncWrite();
+    void makeReply(request_parser::result_t);
     asio::ip::tcp::socket m_socket;
     std::vector<char> m_readBuffer;
     sessionManager & m_manager;
+    request m_request;
+    request_parser m_parcer;
+    std::stringstream m_reply;
     void closeSession();
 };
 }
