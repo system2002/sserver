@@ -30,7 +30,7 @@ public:
 
 private:
     void asyncWrite();
-    void makeReply(request_parser::result_t);
+    void makeReply(request_parser::result_t &&);
     asio::ip::tcp::socket m_socket;
     std::vector<char> m_readBuffer;
     sessionManager & m_manager;

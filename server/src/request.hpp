@@ -5,8 +5,8 @@
 namespace sserver {
 struct header
 {
-  std::string name;
-  std::string value;
+    std::string name;
+    std::string value;
 };
 
 struct request

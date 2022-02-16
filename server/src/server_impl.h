@@ -12,6 +12,9 @@ class server_pimpl
 {
 public:
     server_pimpl(asio::ip::tcp::endpoint ep);
+    server_pimpl(const server_pimpl &) = delete;
+    server_pimpl& operator=(const server_pimpl&) = delete;
+
     ~server_pimpl();
     bool isRun();
 private:
