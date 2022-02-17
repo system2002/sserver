@@ -1,5 +1,6 @@
 #include "session.h"
 #include "sessionManager.h"
+#include "repler.h"
 
 namespace sserver {
 
@@ -10,9 +11,7 @@ session::session(asio::io_context &context, sessionManager &managerRef):
 {}
 
 session::~session()
-{
-
-}
+{}
 
 void session::start()
 {
@@ -31,8 +30,9 @@ void session::asyncRead()
                         m_request, m_readBuffer.data(), m_readBuffer.data() + bytes_transferred);
             if (result != request_parser::result_t::indeterminate)
             {
-                makeReply(std::move (result));
-                asyncSendData(asio::buffer(m_reply.str()));
+                repler reply;
+                makeReply(result, m_request, reply);
+                asyncSendData(reply.toBuffer());
                 m_reply.clear(std::_Ios_Iostate::_S_eofbit);
                 m_parcer.reset();
                 m_request.reset();
@@ -43,67 +43,51 @@ void session::asyncRead()
                 asyncRead();
             }
 
-        } else {
-            closeSession();
         }
-    });
-}
-
-void session::asyncWrite()
-{
-    auto self(shared_from_this());
-    asio::async_write(m_socket, asio::buffer(asio::buffer(m_reply.str())),
-                      [this, self](std::error_code ec, std::size_t)
-    {
-        if (ec)
+        else
         {
-            std::cerr << "Close client" << std::endl;
             closeSession();
         }
     });
 }
 
-void session::makeReply(request_parser::result_t &&res)
+void session::makeReply(const request_parser::result_t &res, const request & requestCurr, repler & reply)
 {
     if (res == request_parser::result_t::good)
     {
-        std::cout << "uri: " <<  m_request.uri << "\n"  ;
-        std::stringstream html {};
-        html            << "<title> Small C++ http server</title>\n"
-                        << "<h1>Server good</h1>\n"
-                        << "<h2>Request headers</h2>\n";
-        html <<"<p>client:"<< m_socket.remote_endpoint().address().to_string() << "</p>\n"  ;
-        html <<"<p>URI:"<< m_request.uri << "</p>\n"  ;
-
-        for (auto line : m_request.headers)
+        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
+        if (requestCurr.uri == "/")
         {
-            html <<"<p>"<< line.name << " : " << line.value << "</p>\n"  ;
+            std::stringstream html {};
+            html            << "<title> Small C++ http server</title>\n"
+                            << "<h1>Server good</h1>\n"
+                            << "<h2>Request headers</h2>\n";
+            html << "Client:" << m_socket.remote_endpoint().address().to_string() << "</br>\n"  ;
+            html << "Client id:" << uint64_t(shared_from_this().get()) << "</br>\n"  ;
+            html << "Connection count:" << m_manager.count() << "</br>\n"  ;
+            html << "URI:" << m_request.uri << "</br>\n"  ;
+            html << "<ul>\n";
+            for (auto &line : m_request.headers)
+            {
+                html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
+            }
+            html << "</ul>\n";
+            html << "<h2>Small C++ http server</h2>\n";
+            reply.setContent(html.str());
         }
-
-
-        html            << "<small>Small C++ http server</small>\n";
-
-        m_reply         << "HTTP/1.1 200 OK\r\n"
-                        << "Version: HTTP/1.1\r\n"
-                        << "Connection : keep-alive\r\n"
-                        << "Cache-Control: no-cache, no-store, must-revalidate\r\n"
-                        << "Content-Type: text/html; charset=utf-8\r\n"
-                        << "Content-Length: " << html.str().length()
-                        << "\r\n\r\n"
-                        << html.str();
-    }
-    else
-    {
-        std::stringstream html {};
-        html            << "<title> Small C++ http server</title>\n"
-                        << "<h1>bad</h1>\n";
-
-        m_reply         << "HTTP/1.1 200 OK\r\n"
-                        << "Version: HTTP/1.1\r\n"
-                        << "Content-Type: text/html; charset=utf-8\r\n"
-                        << "Content-Length: " << html.str().length()
-                        << "\r\n\r\n"
-                        << html.str();
+        else
+        {
+            reply.setStatus(replyStatus_t::forbidden);
+            std::stringstream html {};
+            html << "<title> Small C++ http server</title>\n"
+                 << "<h1>forbidden</h1>\n";
+            if (requestCurr.headerContains("Host"))
+            {
+                html << "forbidden url: http://"
+                     << (requestCurr.getValueHeaders("Host")) << requestCurr.uri << "\n";
+            }
+            reply.setContent(html.str());
+        }
     }
 }
 
@@ -111,6 +95,5 @@ void session::closeSession()
 {
     auto self = shared_from_this();
     m_manager.erase(shared_from_this());
-
 }
 }

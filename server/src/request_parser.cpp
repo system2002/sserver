@@ -1,12 +1,12 @@
 #include "request_parser.hpp"
 #include "request.hpp"
 
+
 namespace sserver {
 
 request_parser::request_parser()
     : m_state(state_t::method_start)
-{
-}
+{}
 
 void request_parser::reset()
 {

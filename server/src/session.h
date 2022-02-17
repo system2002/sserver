@@ -2,6 +2,7 @@
 #include <iostream>
 #include <asio.hpp>
 #include "request.hpp"
+#include "repler.h"
 #include "request_parser.hpp"
 
 namespace sserver {
@@ -29,8 +30,7 @@ public:
     }
 
 private:
-    void asyncWrite();
-    void makeReply(request_parser::result_t &&);
+    void makeReply(const request_parser::result_t &, const request&, repler &);
     asio::ip::tcp::socket m_socket;
     std::vector<char> m_readBuffer;
     sessionManager & m_manager;

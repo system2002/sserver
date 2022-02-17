@@ -10,6 +10,9 @@ add_library(serverLib
     src/request.hpp
     src/request_parser.hpp
     src/request_parser.cpp
+    src/repler.h
+    src/repler.cpp
+    src/types.h
     )
 
 target_link_libraries(serverLib ASIO::ASIO)
