@@ -67,7 +67,7 @@ void session::makeReply(const request_parser::result_t &res, const request & req
             html << "Connection count:" << m_manager.count() << "</br>\n"  ;
             html << "URI:" << m_request.uri << "</br>\n"  ;
             html << "<ul>\n";
-            for (auto &line : m_request.headers)
+            for (auto && line : m_request.headers)
             {
                 html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
             }
