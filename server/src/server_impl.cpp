@@ -19,6 +19,11 @@ server_pimpl::~server_pimpl()
     m_context.stop();
 }
 
+void server_pimpl::appendEqualHandle(std::string_view equalUri, handleManager::handle_type && handle)
+{
+    handleManager::getManager().insertEqual(equalUri, std::move(handle));
+}
+
 bool server_pimpl::isRun()
 {
     return !m_context.stopped();

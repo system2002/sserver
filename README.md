@@ -1,2 +1,2 @@
 # sserver
-small c++ http server
+simple small c++ http server

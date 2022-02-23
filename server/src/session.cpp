@@ -7,7 +7,8 @@ namespace sserver {
 session::session(asio::io_context &context, sessionManager &managerRef):
     m_socket{context},
     m_readBuffer (4096),
-    m_manager {managerRef}
+    m_manager {managerRef},
+    m_handler {handleManager::getManager()}
 {}
 
 session::~session()
@@ -55,39 +56,40 @@ void session::makeReply(const request_parser::result_t &res, const request & req
 {
     if (res == request_parser::result_t::good)
     {
-        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
-        if (requestCurr.uri == "/")
-        {
-            std::stringstream html {};
-            html            << "<title> Small C++ http server</title>\n"
-                            << "<h1>Server good</h1>\n"
-                            << "<h2>Request headers</h2>\n";
-            html << "Client:" << m_socket.remote_endpoint().address().to_string() << "</br>\n"  ;
-            html << "Client id:" << uint64_t(shared_from_this().get()) << "</br>\n"  ;
-            html << "Connection count:" << m_manager.count() << "</br>\n"  ;
-            html << "URI:" << m_request.uri << "</br>\n"  ;
-            html << "<ul>\n";
-            for (auto && line : m_request.headers)
-            {
-                html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
-            }
-            html << "</ul>\n";
-            html << "<h2>Small C++ http server</h2>\n";
-            reply.setContent(html.str());
-        }
-        else
-        {
-            reply.setStatus(replyStatus_t::forbidden);
-            std::stringstream html {};
-            html << "<title> Small C++ http server</title>\n"
-                 << "<h1>forbidden</h1>\n";
-            if (requestCurr.headerContains("Host"))
-            {
-                html << "forbidden url: http://"
-                     << (requestCurr.getValueHeaders("Host")) << requestCurr.uri << "\n";
-            }
-            reply.setContent(html.str());
-        }
+        m_handler.callHandle(requestCurr, reply);
+//        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
+//        if (requestCurr.uri == "/")
+//        {
+//            std::stringstream html {};
+//            html            << "<title> Small C++ http server</title>\n"
+//                            << "<h1>Server good</h1>\n"
+//                            << "<h2>Request headers</h2>\n";
+//            html << "Client:" << m_socket.remote_endpoint().address().to_string() << "</br>\n"  ;
+//            html << "Client id:" << uint64_t(shared_from_this().get()) << "</br>\n"  ;
+//            html << "Connection count:" << m_manager.count() << "</br>\n"  ;
+//            html << "URI:" << m_request.uri << "</br>\n"  ;
+//            html << "<ul>\n";
+//            for (auto && line : m_request.headers)
+//            {
+//                html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
+//            }
+//            html << "</ul>\n";
+//            html << "<h2>Small C++ http server</h2>\n";
+//            reply.setContent(html.str());
+//        }
+//        else
+//        {
+//            reply.setStatus(replyStatus_t::forbidden);
+//            std::stringstream html {};
+//            html << "<title> Small C++ http server</title>\n"
+//                 << "<h1>forbidden</h1>\n";
+//            if (requestCurr.headerContains("Host"))
+//            {
+//                html << "forbidden url: http://"
+//                     << (requestCurr.getValueHeaders("Host")) << requestCurr.uri << "\n";
+//            }
+//            reply.setContent(html.str());
+//        }
     }
 }
 

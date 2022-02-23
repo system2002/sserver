@@ -13,6 +13,8 @@ add_library(serverLib
     src/repler.h
     src/repler.cpp
     src/types.h
+    src/handlemanager.cpp
+    src/handlemanager.h
     )
 
 target_link_libraries(serverLib ASIO::ASIO)

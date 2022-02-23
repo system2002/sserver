@@ -4,6 +4,7 @@
 #include "request.hpp"
 #include "repler.h"
 #include "request_parser.hpp"
+#include "handlemanager.h"
 
 namespace sserver {
 class sessionManager;
@@ -37,6 +38,7 @@ private:
     request m_request;
     request_parser m_parcer;
     std::stringstream m_reply;
+    const handleManager & m_handler;
     void closeSession();
 };
 }
