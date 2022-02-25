@@ -1,8 +1,8 @@
 #pragma once
 #include <iostream>
 #include <asio.hpp>
-#include "request.hpp"
-#include "repler.h"
+#include "server/request.hpp"
+#include "server/repler.h"
 #include "request_parser.hpp"
 #include "handlemanager.h"
 

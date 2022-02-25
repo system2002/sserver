@@ -4,11 +4,7 @@ namespace sserver {
 
 bool sessionManager::contains(pSession session) const
 {
-    for (auto it = m_sessions.cbegin(); it != m_sessions.cend(); ++it)
-    {
-        if (session == *it) return true;
-    }
-    return false;
+    return m_sessions.find(session) != m_sessions.cend();
 }
 
 void sessionManager::erase(pSession session)
@@ -20,7 +16,7 @@ void sessionManager::erase(pSession session)
     }
 }
 
-pSession sessionManager::newSession()
+pSession sessionManager::makeSession()
 {
     return std::make_shared<session>(m_context, *this);
 }

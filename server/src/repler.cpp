@@ -1,7 +1,7 @@
-#include "repler.h"
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include "server/repler.h"
 
 namespace  http_protocol_str{
 constexpr std::string_view ok =
@@ -50,7 +50,7 @@ namespace sserver {
 
 repler::repler(replyStatus_t status)  : m_replyStatus {status}
 {
-    setConnectioType(connection_t::keep_alive);
+    setConnectionType(connection_t::keep_alive);
 }
 
 std::string_view repler::status_text(replyStatus_t reply)
@@ -79,18 +79,22 @@ std::string_view repler::status_text(replyStatus_t reply)
 
 void repler::setContentLength(size_t length)
 {
-    for (header & line : m_headerLines)
+    auto it = std::find_if(m_headerLines.begin(), m_headerLines.end(), [](headerLine &line)
     {
-        if (line.name == http_protocol_str::content_length)
-        {
-            line.value = std::to_string(length);
-            return;
-        }
+        return line.name == http_protocol_str::content_length;
+    });
+
+    if (it != m_headerLines.end())
+    {
+        it->value = std::to_string(length);
     }
-    m_headerLines.emplace_back(http_protocol_str::content_length, std::to_string(length));
+    else
+    {
+        m_headerLines.emplace_back(http_protocol_str::content_length, std::to_string(length));
+    }
 }
 
-void repler::setConnectioType(connection_t conn)
+void repler::setConnectionType(connection_t conn)
 {
     addHeaderLine(http_protocol_str::connection,
                   (conn == connection_t::keep_alive) ? http_protocol_str::keep_alive : http_protocol_str::close);
@@ -100,7 +104,7 @@ std::vector<asio::const_buffer> repler::toBuffer()
 {
     std::vector<asio::const_buffer> result {};
     result.push_back(asio::buffer(status_text(m_replyStatus)));
-    for (const header & line : m_headerLines)
+    for (const headerLine & line : m_headerLines)
     {
         result.push_back(asio::buffer(line.name));
         result.push_back(asio::buffer(http_protocol_str::name_value_glue));

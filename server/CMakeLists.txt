@@ -7,12 +7,13 @@ add_library(serverLib
     src/sessionManager.cpp
     src/session.cpp
     src/server.cpp
-    src/request.hpp
+    include/server/request.hpp
+    src/request.cpp
     src/request_parser.hpp
     src/request_parser.cpp
-    src/repler.h
+    include/server/repler.h
     src/repler.cpp
-    src/types.h
+    include/server/types.h
     src/handlemanager.cpp
     src/handlemanager.h
     )

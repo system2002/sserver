@@ -1,5 +1,7 @@
 #include "handlemanager.h"
 #include <sstream>
+#include <algorithm>
+#include <iostream>
 
 namespace sserver {
 handleManager & handleManager::getManager()
@@ -10,41 +12,71 @@ handleManager & handleManager::getManager()
 
 handleManager::handleManager()
 {
+    handle_type handle = [](const request & req, repler & reply)
+    {
+        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
+        std::stringstream html {};
+        html            << "<title> Small C++ http server</title>\n"
+                           << "<h1>Server good</h1>\n"
+                           << "<h2>Request headers</h2>\n";
+        html << "URI:" << req.uri << "</br>\n"  ;
+        html << "<ul>\n";
+        for (auto && line : req.headers)
+        {
+            html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
+        }
+        html << "</ul>\n";
+        html << "<h2>Small C++ http server</h2>\n";
+        reply.setContent(html.str());
 
+    };
+    appendPrefixHandle("/", std::move(handle));
 }
 
 void handleManager::callHandle(const request & req , repler & reply) const
 {
-    handle_type handle = [](const request & req, repler & reply)
+    auto it = m_equalHandle.find(req.uri);
+    if (it != m_equalHandle.cend())
     {
-        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
-        if (req.uri == "/")
+        it->second(req, reply);
+        return;
+    }
+
+    auto find = m_prefixHandle.cend();
+    for (auto it = m_prefixHandle.cbegin(); it != m_prefixHandle.cend(); ++it)
+    {
+        if (req.uri.size() < it->first.size()) continue;
+        std::string_view uriPrefix = std::string_view(req.uri).substr(0, it->first.size());
+        if (uriPrefix == it->first)
         {
-            std::stringstream html {};
-            html            << "<title> Small C++ http server</title>\n"
-                            << "<h1>Server good</h1>\n"
-                            << "<h2>Request headers</h2>\n";
-//            html << "Client:" << m_socket.remote_endpoint().address().to_string() << "</br>\n"  ;
-//            html << "Client id:" << uint64_t(shared_from_this().get()) << "</br>\n"  ;
-//            html << "Connection count:" << m_manager.count() << "</br>\n"  ;
-            html << "URI:" << req.uri << "</br>\n"  ;
-            html << "<ul>\n";
-            for (auto && line : req.headers)
+            if (find == m_prefixHandle.cend())
             {
-                html <<"<li>"<< line.name << ": " << line.value << "</li>\n"  ;
+                find = it;
             }
-            html << "</ul>\n";
-            html << "<h2>Small C++ http server</h2>\n";
-            reply.setContent(html.str());
+            else
+            {
+                if (find->first.size() < it->first.size())
+                {
+                    find = it;
+                }
+            }
         }
-    };
-    handle(req, reply);
+    }
+    if (find != m_prefixHandle.cend())
+    {
+        find->second(req, reply);
+    }
 }
 
-void handleManager::insertEqual(std::string_view uriKey, handle_type &&handle )
+void handleManager::appendEqualHandle(std::string_view uriKey, handle_type &&handle )
 {
     if (!handle) return;
-    m_equalHandle.insert(std::make_pair(uriKey, handle));
+    m_equalHandle[static_cast<std::string>(uriKey)] = handle;
+}
 
+void handleManager::appendPrefixHandle(std::string_view uriKey, handleManager::handle_type &&handle)
+{
+    if (!handle) return;
+    m_prefixHandle[static_cast<std::string>(uriKey)] = handle;
 }
 }

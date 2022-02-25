@@ -21,7 +21,12 @@ server_pimpl::~server_pimpl()
 
 void server_pimpl::appendEqualHandle(std::string_view equalUri, handleManager::handle_type && handle)
 {
-    handleManager::getManager().insertEqual(equalUri, std::move(handle));
+    handleManager::getManager().appendEqualHandle(equalUri, std::move(handle));
+}
+
+void server_pimpl::appendPrefixHandle(std::string_view equalUri, handleManager::handle_type && handle)
+{
+    handleManager::getManager().appendPrefixHandle(equalUri, std::move(handle));
 }
 
 bool server_pimpl::isRun()
@@ -46,7 +51,7 @@ void server_pimpl::handleAccept(const asio::error_code &error, pSession newSessi
 
 void server_pimpl::startAccept()
 {
-    pSession newSession = m_manager.newSession();
+    pSession newSession = m_manager.makeSession();
     m_acceptor.async_accept(newSession->socket(), [this, newSession](const asio::error_code &error)
     {
         if (!error)

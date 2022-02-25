@@ -35,7 +35,7 @@ public:
     repler(replyStatus_t status = replyStatus_t::ok);
     void setStatus(replyStatus_t status) {m_replyStatus = status;}
     void setContentLength(size_t length);
-    void setConnectioType(connection_t connection);
+    void setConnectionType(connection_t connection);
 
     template<typename NameString, typename valueString>
     void addHeaderLine(NameString && name, valueString && value)
@@ -54,7 +54,7 @@ public:
     }
     std::vector<asio::const_buffer> toBuffer();
 private:
-    static std::string_view status_text(replyStatus_t reply);
+    static std::string_view status_text(replyStatus_t reply) ;
     headers_t m_headerLines;
     replyStatus_t m_replyStatus;
     std::string m_content;

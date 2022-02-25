@@ -18,7 +18,7 @@ public:
     void insert(pSession session) { m_sessions.insert(session); }
     void erase(pSession session);
     size_t count() const {return m_sessions.size();}
-    pSession newSession();
+    pSession makeSession();
 
 private:
     std::unordered_set<pSession> m_sessions;

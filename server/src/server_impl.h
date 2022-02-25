@@ -17,6 +17,7 @@ public:
     server_pimpl& operator=(const server_pimpl&) = delete;
     ~server_pimpl();
     void appendEqualHandle(std::string_view equalUri, handleManager::handle_type &&);
+    void appendPrefixHandle(std::string_view equalUri, handleManager::handle_type &&);
 
 
     bool isRun();

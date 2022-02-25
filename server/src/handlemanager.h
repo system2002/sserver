@@ -1,9 +1,11 @@
 #pragma once
 
 #include <functional>
-#include "request.hpp"
-#include "repler.h"
+#include "server/request.hpp"
+#include "server/repler.h"
 #include <unordered_map>
+#include <map>
+#include <unordered_set>
 
 
 
@@ -21,14 +23,16 @@ public:
     handleManager operator=(const handleManager&)  = delete;
     void callHandle(const request&, repler &) const;
 
-    void insertEqual(std::string_view uriKey, handle_type &&handle);
+    void appendEqualHandle(std::string_view uriKey, handle_type &&handle);
+    void appendPrefixHandle(std::string_view uriKey, handle_type &&handle);
 
 
 private:
-    using equalMap_type = std::unordered_map<std::string,  handle_type>;
+    using handleMap_type = std::unordered_map<std::string,  handle_type>;
     handleManager();
-    equalMap_type m_equalHandle;
-    equalMap_type m_prefixHandle;
+    handleMap_type m_equalHandle;
+    handleMap_type m_prefixHandle;
+//    std::map<size_t, handleMap_type> m_prefixSize;
 
 
 
