@@ -27,7 +27,7 @@ int main()
         reply.setContent(html.str());
     });
 
-    // about page
+    // About page
     srv.appendEqualHandle("/about", [](const sserver::request& req, sserver::repler &reply)
     {
         reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
@@ -40,7 +40,7 @@ int main()
         reply.setContent(html.str());
     });
 
-    // default page
+    // Default page
 
     srv.appendPrefixHandle("/", [](const sserver::request& req, sserver::repler &reply)
     {

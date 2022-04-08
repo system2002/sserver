@@ -13,4 +13,3 @@ set(ASIO_ROOT ${CMAKE_SOURCE_DIR}/external/asio/asio)
 
 find_package(ASIO REQUIRED)
 add_subdirectory(server)
-add_subdirectory(client_tester)
