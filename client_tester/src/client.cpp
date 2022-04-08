@@ -44,8 +44,6 @@ void client::asyncRead()
     {
         if (!error)
         {
-//            std::cout.write(readBuffer_.data(), size);
-//            std::cout << std::endl;
             handle_();
             asyncRead();
             staticSend();

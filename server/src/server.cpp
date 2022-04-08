@@ -35,7 +35,7 @@ void server::appendPrefixHandle(std::string_view equalUri, handle_type &&handle)
     }
 }
 
-bool server::isRun()
+bool server::isRun() const
 {
     return m_pimpl && m_pimpl->isRun();
 }

@@ -7,10 +7,10 @@ struct headerLine
 {
 
     template<typename StrTypeName, typename StrTypeValue>
-    headerLine (StrTypeName Aname, StrTypeValue Avalue) :
+    headerLine (StrTypeName &&Aname, StrTypeValue &&Avalue) :
         name {std::forward<StrTypeName>(Aname)}, value {std::forward<StrTypeValue>(Avalue)} {}
 
-    headerLine () {}
+    headerLine () = default;
     std::string name;
     std::string value;
 };

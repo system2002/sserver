@@ -23,7 +23,7 @@ public:
     void appendEqualHandle(std::string_view equalUri, handle_type &&handle);
     void appendPrefixHandle(std::string_view equalUri, handle_type &&handle);
 
-    bool isRun();
+    bool isRun() const;
 private:
     std::unique_ptr<server_pimpl> m_pimpl;
 };

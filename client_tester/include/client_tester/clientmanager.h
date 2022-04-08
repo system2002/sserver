@@ -3,7 +3,7 @@
 #include "client_tester/client.h"
 
 
-constexpr size_t connect_count = 1000;
+constexpr size_t connect_count = 200;
 
 namespace cl
 {
@@ -16,7 +16,6 @@ public:
 private:
     std::atomic<size_t> count_;
     asio::io_context & context_;
-//    client client_;
     std::vector<client> vclient_;
     CallbackRead_t handle_;
 

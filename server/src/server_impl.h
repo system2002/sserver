@@ -20,7 +20,7 @@ public:
     void appendPrefixHandle(std::string_view equalUri, handleManager::handle_type &&);
 
 
-    bool isRun();
+    bool isRun() const;
 private:
     asio::io_context m_context;
     asio::ip::tcp::acceptor m_acceptor;

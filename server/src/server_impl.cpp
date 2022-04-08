@@ -29,7 +29,7 @@ void server_pimpl::appendPrefixHandle(std::string_view equalUri, handleManager::
     handleManager::getManager().appendPrefixHandle(equalUri, std::move(handle));
 }
 
-bool server_pimpl::isRun()
+bool server_pimpl::isRun() const
 {
     return !m_context.stopped();
 }

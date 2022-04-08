@@ -21,7 +21,7 @@ public:
     template<typename Buffer_t>
     void asyncSendData(Buffer_t &&buffer)
     {
-        m_socket.async_write_some(std::forward<Buffer_t>(buffer), [&](const asio::error_code& error, std::size_t)
+        m_socket.async_write_some(std::forward<Buffer_t>(buffer), [](const asio::error_code& error, std::size_t)
         {
             if (error)
             {

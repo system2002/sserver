@@ -42,17 +42,17 @@ int main()
 
     // default page
 
-//    srv.appendPrefixHandle("/", [](const sserver::request& req, sserver::repler &reply)
-//    {
-//        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
-//        reply.setStatus(sserver::replyStatus_t::forbidden);
-//        std::stringstream html {};
-//        html
-//            << "<title> Small C++ http server. About</title>\n"
-//            << "<h1>Forbidden</h1>\n"
-//            << "<h6>Small C++ http server</h6>\n";
-//        reply.setContent(html.str());
-//    });
+    srv.appendPrefixHandle("/", [](const sserver::request& req, sserver::repler &reply)
+    {
+        reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
+        reply.setStatus(sserver::replyStatus_t::forbidden);
+        std::stringstream html {};
+        html
+            << "<title> Small C++ http server. About</title>\n"
+            << "<h1>Forbidden</h1>\n"
+            << "<h6>Small C++ http server</h6>\n";
+        reply.setContent(html.str());
+    });
 
     srv.appendPrefixHandle("/news", [](const sserver::request& req, sserver::repler &reply)
     {
@@ -65,6 +65,7 @@ int main()
             << "<h6>Small C++ http server</h6>\n";
         reply.setContent(html.str());
     });
+
     srv.appendPrefixHandle("/new", [](const sserver::request& req, sserver::repler &reply)
     {
         reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
@@ -77,8 +78,6 @@ int main()
         reply.setContent(html.str());
     });
 
-    constexpr size_t thead_count = 12;
-    std::vector<std::future<void>> vf (thead_count);
 
     asio::signal_set signal(context, SIGINT, SIGTERM);
     signal.async_wait([&context](const asio::error_code & err, int signal)
@@ -87,11 +86,8 @@ int main()
     });
 
 
-//    std::future<void> future = std::async(std::launch::async, [&]()
-//    {
-//        context.run();
-//    });
-
+    constexpr size_t thead_count = 12;
+    std::vector<std::future<void>> vf (thead_count);
     for (auto && future : vf)
     {
         future = std::async(std::launch::async, [&]()

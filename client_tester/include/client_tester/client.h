@@ -25,8 +25,6 @@ public:
             if (error)
             {
                 std::cerr << "Send error: " << error.value();
-//                m_context.stop();
-//                m_isConnected = false;
             }
         });
     }

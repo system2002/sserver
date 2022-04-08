@@ -27,8 +27,6 @@ void session::asyncRead()
     {
         if (!ec)
         {
-//            std::cout.write(m_readBuffer.data(), bytes_transferred);
-//            std::cout << std::endl;
             request_parser::result_t result = m_parcer.parse(
                         m_request, m_readBuffer.data(), m_readBuffer.data() + bytes_transferred);
             if (result != request_parser::result_t::indeterminate)
@@ -45,7 +43,6 @@ void session::asyncRead()
             {
                 asyncRead();
             }
-
         }
         else
         {
