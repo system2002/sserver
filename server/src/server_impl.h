@@ -9,13 +9,13 @@
 
 namespace sserver {
 
-class server_pimpl
+class server_impl
 {
 public:
-    server_pimpl(asio::ip::tcp::endpoint ep);
-    server_pimpl(const server_pimpl &) = delete;
-    server_pimpl& operator=(const server_pimpl&) = delete;
-    ~server_pimpl();
+    server_impl(asio::ip::tcp::endpoint ep);
+    server_impl(const server_impl &) = delete;
+    server_impl& operator=(const server_impl&) = delete;
+    ~server_impl();
     void appendEqualHandle(std::string_view equalUri, handleManager::handle_type &&);
     void appendPrefixHandle(std::string_view equalUri, handleManager::handle_type &&);
 

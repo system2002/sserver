@@ -1,11 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <unordered_map>
 #include "server/request.hpp"
 #include "server/repler.h"
-#include <unordered_map>
-#include <map>
-#include <unordered_set>
 
 
 
@@ -32,11 +30,6 @@ private:
     handleManager();
     handleMap_type m_equalHandle;
     handleMap_type m_prefixHandle;
-//    std::map<size_t, handleMap_type> m_prefixSize;
-
-
-
-
 
 };
 

@@ -13,6 +13,8 @@ public:
     sessionManager(asio::io_context &context) :
         m_context {context}
     {}
+    sessionManager(const sessionManager &) = delete;
+    sessionManager(sessionManager &&) = delete;
 
     bool contains(pSession session) const;
     void insert(pSession session) { m_sessions.insert(session); }

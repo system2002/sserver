@@ -33,31 +33,31 @@ class repler
 {
 public:
     repler(replyStatus_t status = replyStatus_t::ok);
-    void setStatus(replyStatus_t status) {m_replyStatus = status;}
+    void setStatus(replyStatus_t status) {replyStatus_ = status;}
     void setContentLength(size_t length);
     void setConnectionType(connection_t connection);
 
     template<typename NameString, typename valueString>
     void addHeaderLine(NameString && name, valueString && value)
     {
-        m_headerLines.emplace_back(std::forward<NameString>(name), std::forward<valueString>(value));
+        headerLines_.emplace_back(std::forward<NameString>(name), std::forward<valueString>(value));
     }
 
     template<typename ContentString>
     void setContent(ContentString &&content, bool setLineContentLength = true)
     {
-        m_content = std::forward<ContentString>(content);
+        content_ = std::forward<ContentString>(content);
         if (setLineContentLength)
         {
-            setContentLength(m_content.length());
+            setContentLength(content_.length());
         }
     }
     std::vector<asio::const_buffer> toBuffer();
 private:
     static std::string_view status_text(replyStatus_t reply) ;
-    headers_t m_headerLines;
-    replyStatus_t m_replyStatus;
-    std::string m_content;
+    headers_t headerLines_;
+    replyStatus_t replyStatus_;
+    std::string content_;
 };
 
 

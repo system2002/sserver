@@ -48,7 +48,7 @@ constexpr std::string_view close = "close";
 
 namespace sserver {
 
-repler::repler(replyStatus_t status)  : m_replyStatus {status}
+repler::repler(replyStatus_t status)  : replyStatus_ {status}
 {
     setConnectionType(connection_t::keep_alive);
 }
@@ -79,18 +79,18 @@ std::string_view repler::status_text(replyStatus_t reply)
 
 void repler::setContentLength(size_t length)
 {
-    auto it = std::find_if(m_headerLines.begin(), m_headerLines.end(), [](headerLine &line)
+    auto it = std::find_if(headerLines_.begin(), headerLines_.end(), [](headerLine &line)
     {
         return line.name == http_protocol_str::content_length;
     });
 
-    if (it != m_headerLines.end())
+    if (it != headerLines_.end())
     {
         it->value = std::to_string(length);
     }
     else
     {
-        m_headerLines.emplace_back(http_protocol_str::content_length, std::to_string(length));
+        headerLines_.emplace_back(http_protocol_str::content_length, std::to_string(length));
     }
 }
 
@@ -103,8 +103,8 @@ void repler::setConnectionType(connection_t conn)
 std::vector<asio::const_buffer> repler::toBuffer()
 {
     std::vector<asio::const_buffer> result {};
-    result.push_back(asio::buffer(status_text(m_replyStatus)));
-    for (const headerLine & line : m_headerLines)
+    result.push_back(asio::buffer(status_text(replyStatus_)));
+    for (const headerLine & line : headerLines_)
     {
         result.push_back(asio::buffer(line.name));
         result.push_back(asio::buffer(http_protocol_str::name_value_glue));
@@ -112,7 +112,7 @@ std::vector<asio::const_buffer> repler::toBuffer()
         result.push_back(asio::buffer(http_protocol_str::end_line));
     }
     result.push_back(asio::buffer(http_protocol_str::end_line));
-    result.push_back(asio::buffer(m_content));
+    result.push_back(asio::buffer(content_));
 
     return result;
 }

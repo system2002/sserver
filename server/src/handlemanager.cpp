@@ -35,36 +35,37 @@ handleManager::handleManager()
 
 void handleManager::callHandle(const request & req , repler & reply) const
 {
-    auto it = m_equalHandle.find(req.uri);
-    if (it != m_equalHandle.cend())
+    auto equalIt = m_equalHandle.find(req.uri);
+    if (equalIt != m_equalHandle.cend())
     {
-        it->second(req, reply);
+        equalIt->second(req, reply);
         return;
     }
 
-    auto find = m_prefixHandle.cend();
+    //if equal not found:
+    auto prefixIt = m_prefixHandle.cend();
     for (auto it = m_prefixHandle.cbegin(); it != m_prefixHandle.cend(); ++it)
     {
         if (req.uri.size() < it->first.size()) continue;
         std::string_view uriPrefix = std::string_view(req.uri).substr(0, it->first.size());
         if (uriPrefix == it->first)
         {
-            if (find == m_prefixHandle.cend())
+            if (prefixIt == m_prefixHandle.cend())
             {
-                find = it;
+                prefixIt = it;
             }
             else
             {
-                if (find->first.size() < it->first.size())
+                if (prefixIt->first.size() < it->first.size())
                 {
-                    find = it;
+                    prefixIt = it;
                 }
             }
         }
     }
-    if (find != m_prefixHandle.cend())
+    if (prefixIt != m_prefixHandle.cend())
     {
-        find->second(req, reply);
+        prefixIt->second(req, reply);
     }
 }
 

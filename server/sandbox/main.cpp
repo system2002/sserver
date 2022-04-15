@@ -1,5 +1,6 @@
 #include <iostream>
 #include <future>
+#include <algorithm>
 #include "server/server.h"
 
 void signal_handler(asio::io_context &context, const asio::error_code &, int)
@@ -21,7 +22,7 @@ int main()
         reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
         std::stringstream html {};
         html
-            << "<title> Small C++ http server. About</title>\n"
+            << "<title> Small C++ http server</title>\n"
             << "<h1>work it</h1>\n"
             << "<h6>Small C++ http server</h6>\n";
         reply.setContent(html.str());
@@ -48,19 +49,20 @@ int main()
         reply.setStatus(sserver::replyStatus_t::forbidden);
         std::stringstream html {};
         html
-            << "<title> Small C++ http server. About</title>\n"
+            << "<title> Small C++ http server</title>\n"
             << "<h1>Forbidden</h1>\n"
             << "<h6>Small C++ http server</h6>\n";
         reply.setContent(html.str());
     });
 
-    srv.appendPrefixHandle("/news", [](const sserver::request& req, sserver::repler &reply)
+    srv.appendEqualHandle("/news", [](const sserver::request& req, sserver::repler &reply)
     {
         reply.addHeaderLine("Content-Type", "text/html; charset=utf-8");
         std::stringstream html {};
         html
             << "<title> Small C++ http server. News</title>\n"
             << "<h1>News</h1>\n"
+            << "<h2>Equal handler example</h2>\n"
             << "URI: " << req.uri
             << "<h6>Small C++ http server</h6>\n";
         reply.setContent(html.str());
@@ -73,8 +75,21 @@ int main()
         html
             << "<title> Small C++ http server. New</title>\n"
             << "<h1>New</h1>\n"
+            << "<h2>Prefix handler example</h2>\n"
             << "URI: " << req.uri
             << "<h2>Small C++ http server</h2>\n";
+
+        std::for_each(req.headers.cbegin(), req.headers.cend(), [&html](const sserver::headerLine &line)
+        {
+            html <<"<p>"
+                << line.name
+                << ": "
+                << line.value
+                <<"</p>\n";
+        });
+
+        html <<"<h5>"<< req.getValueHeaders("Host") << "</h5>\n";
+
         reply.setContent(html.str());
     });
 
@@ -85,20 +100,18 @@ int main()
         signal_handler(context, err, signal);
     });
 
-
-    constexpr size_t thead_count = 12;
-    std::vector<std::future<void>> vf (thead_count);
-    for (auto && future : vf)
+    std::vector<std::future<void>> vf (std::thread::hardware_concurrency());
+    std::transform(vf.cbegin(), vf.cend(), vf.begin(), [&context](const std::future<void> &)
     {
-        future = std::async(std::launch::async, [&]()
+        return std::async(std::launch::async, [&]()
         {
             context.run();
         });
-    }
+    });
 
-    for (auto && future : vf)
+    std::for_each(vf.cbegin(), vf.cend(), [](const std::future<void> & future)
     {
         future.wait();
-    }
+    });
     return 0;
 }

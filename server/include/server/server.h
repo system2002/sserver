@@ -8,10 +8,8 @@
 
 namespace sserver {
 
-
-class request;
 class repler;
-class server_pimpl;
+class server_impl;
 using handle_type = std::function<void(const request&, repler &)>;
 
 
@@ -25,7 +23,6 @@ public:
 
     bool isRun() const;
 private:
-    std::unique_ptr<server_pimpl> m_pimpl;
+    std::unique_ptr<server_impl> pimpl_;
 };
-
-} // namespace chat
+}

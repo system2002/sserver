@@ -4,40 +4,41 @@ namespace sserver {
 
 server::server(asio::ip::tcp::endpoint ep)
 {
-    std::unique_ptr<server_pimpl> server;
+    std::unique_ptr<server_impl> server;
     try
     {
-        server = std::make_unique<server_pimpl>(ep);
+        server = std::make_unique<server_impl>(ep);
     }
     catch (std::system_error error)
     {
         std::cerr << "Error init server " << error.what() << " error code: " << error.code() << std::endl;
+        return;
     }
     if (server != nullptr)
     {
-        m_pimpl = std::move(server);
+        pimpl_ = std::move(server);
     }
 }
 
 void server::appendEqualHandle(std::string_view equalUri, handle_type &&handle)
 {
-    if (m_pimpl)
+    if (pimpl_)
     {
-        m_pimpl->appendEqualHandle(equalUri, std::move(handle));
+        pimpl_->appendEqualHandle(equalUri, std::move(handle));
     }
 }
 
 void server::appendPrefixHandle(std::string_view equalUri, handle_type &&handle)
 {
-    if (m_pimpl)
+    if (pimpl_)
     {
-        m_pimpl->appendPrefixHandle(equalUri, std::move(handle));
+        pimpl_->appendPrefixHandle(equalUri, std::move(handle));
     }
 }
 
 bool server::isRun() const
 {
-    return m_pimpl && m_pimpl->isRun();
+    return pimpl_ && pimpl_->isRun();
 }
 server::~server() = default;
 
